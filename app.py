@@ -63,13 +63,18 @@ if referencia_file and piezas_file:
         with st.spinner("Analizando texturas y formas de las piezas..."):
             try:
                 # Procesar
-                resultado, lista_fichas = solver.detectar_y_emparejar(img_ref, img_piezas)
+                resultado, piezas_marcadas, lista_fichas = solver.detectar_y_emparejar(img_ref, img_piezas)
                 
                 num_encontradas = len(lista_fichas)
                 st.success(f"¡Análisis completado! Se han localizado {num_encontradas} posibles ubicaciones.")
                 
                 st.subheader("Resultado")
-                st.image(resultado, channels="BGR", caption="Ubicaciones Sugeridas (Marcadas en Verde)", use_container_width=True)
+                
+                col_res1, col_res2 = st.columns(2)
+                with col_res1:
+                    st.image(resultado, channels="BGR", caption="1. Ubicaciones en la Caja", use_container_width=True)
+                with col_res2:
+                    st.image(piezas_marcadas, channels="BGR", caption="2. Identificación de Fichas", use_container_width=True)
                 
                 if num_encontradas > 0:
                     st.write("### 📋 Detalle de Fichas Encontradas")

@@ -33,6 +33,7 @@ def detectar_y_emparejar(img_ref, img_piezas):
 
     # Imagen copia para dibujar resultados
     img_resultado = img_ref.copy()
+    img_piezas_marcadas = img_piezas.copy()
     
     # Configurar matcher
     bf = cv2.BFMatcher()
@@ -98,7 +99,13 @@ def detectar_y_emparejar(img_ref, img_piezas):
                             "Ubicacion Approx": f"({cX}, {cY})"
                         }
                         piezas_encontradas.append(detalles_pieza)
+                        
+                        # Tambien marcar en la imagen de piezas original para que el usuario sepa cual es cual
+                        x, y, w, h = cv2.boundingRect(cnt)
+                        cv2.rectangle(img_piezas_marcadas, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        cv2.putText(img_piezas_marcadas, f"#{i+1}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
                 except Exception as e:
                     print(f"Error transformando pieza {i}: {e}")
 
-    return img_resultado, piezas_encontradas
+    return img_resultado, img_piezas_marcadas, piezas_encontradas
