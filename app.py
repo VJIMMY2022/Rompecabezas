@@ -15,7 +15,7 @@ except Exception as e:
     st.error(f"⚠️ Error inesperado al iniciar: {e}")
     st.stop()
 
-st.title("🧩 Asistente de Armado de Rompecabezas v1.1")
+st.title("🧩 Asistente de Armado de Rompecabezas v2.0 (Ultra-Robust)")
 st.markdown("""
 Esta aplicación te ayuda a encontrar la ubicación de las fichas sueltas en tu rompecabezas.
 1. Sube la **Imagen Original** (del rompecabezas completo).
