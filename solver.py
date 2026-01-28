@@ -37,7 +37,7 @@ def detectar_y_emparejar(img_ref, img_piezas):
     # Configurar matcher
     bf = cv2.BFMatcher()
 
-    piezas_encontradas = 0
+    piezas_encontradas = []
 
     for i, cnt in enumerate(contornos):
         # Ignorar contornos muy pequeños (ruido)
@@ -81,13 +81,23 @@ def detectar_y_emparejar(img_ref, img_piezas):
                     # Dibujar caja en la imagen de referencia
                     img_resultado = cv2.polylines(img_resultado, [np.int32(dst)], True, (0, 255, 0), 3, cv2.LINE_AA)
                     
-                    # Dibujar etiqueta
+                # Dibujar etiqueta
                     moments = cv2.moments(dst)
                     if moments["m00"] != 0:
                         cX = int(moments["m10"] / moments["m00"])
                         cY = int(moments["m01"] / moments["m00"])
                         cv2.putText(img_resultado, f"Pieza {i+1}", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-                        piezas_encontradas += 1
+                        
+                        # Determinar confianza basada en numero de matches
+                        confianza = "Alta" if len(buenos_matches) > 30 else "Media" if len(buenos_matches) > 15 else "Baja"
+                        
+                        detalles_pieza = {
+                            "Pieza ID": f"#{i+1}",
+                            "Coincidencias": len(buenos_matches),
+                            "Confianza": confianza,
+                            "Ubicacion Approx": f"({cX}, {cY})"
+                        }
+                        piezas_encontradas.append(detalles_pieza)
                 except Exception as e:
                     print(f"Error transformando pieza {i}: {e}")
 

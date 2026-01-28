@@ -18,11 +18,25 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.header("1. Imagen de Referencia")
-    referencia_file = st.file_uploader("Sube la imagen de la caja o puzzle completo", type=['jpg', 'png', 'jpeg'], key="ref")
+    tab_ref_file, tab_ref_cam = st.tabs(["📂 Subir Archivo", "📸 Usar Cámara"])
+    
+    with tab_ref_file:
+        ref_file_val = st.file_uploader("Sube la imagen de la caja", type=['jpg', 'png', 'jpeg'], key="ref_upload")
+    with tab_ref_cam:
+        ref_cam_val = st.camera_input("Toma una foto de la caja", key="ref_cam")
+    
+    referencia_file = ref_file_val if ref_file_val else ref_cam_val
 
 with col2:
     st.header("2. Fichas Sueltas")
-    piezas_file = st.file_uploader("Sube foto de las fichas (fondo contraste)", type=['jpg', 'png', 'jpeg'], key="pieces")
+    tab_piezas_file, tab_piezas_cam = st.tabs(["📂 Subir Archivo", "📸 Usar Cámara"])
+    
+    with tab_piezas_file:
+        piezas_file_val = st.file_uploader("Sube foto de las fichas", type=['jpg', 'png', 'jpeg'], key="pieces_upload")
+    with tab_piezas_cam:
+        piezas_cam_val = st.camera_input("Toma una foto de las fichas", key="pieces_cam")
+    
+    piezas_file = piezas_file_val if piezas_file_val else piezas_cam_val
 
 if referencia_file and piezas_file:
     # Mostrar imágenes cargadas
@@ -40,12 +54,17 @@ if referencia_file and piezas_file:
         with st.spinner("Analizando texturas y formas de las piezas..."):
             try:
                 # Procesar
-                resultado, num_encontradas = solver.detectar_y_emparejar(img_ref, img_piezas)
+                resultado, lista_fichas = solver.detectar_y_emparejar(img_ref, img_piezas)
                 
+                num_encontradas = len(lista_fichas)
                 st.success(f"¡Análisis completado! Se han localizado {num_encontradas} posibles ubicaciones.")
                 
                 st.subheader("Resultado")
                 st.image(resultado, channels="BGR", caption="Ubicaciones Sugeridas (Marcadas en Verde)", use_container_width=True)
+                
+                if num_encontradas > 0:
+                    st.write("### 📋 Detalle de Fichas Encontradas")
+                    st.dataframe(lista_fichas, use_container_width=True)
                 
                 if num_encontradas == 0:
                     st.warning("No se encontraron coincidencias claras. Intenta tomar la foto de las fichas más cerca, con mejor luz, o asegúrate que no estén rotadas excesivamente (aunque el algoritmo tolera rotación).")
