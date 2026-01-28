@@ -1,10 +1,19 @@
 import streamlit as st
-import numpy as np
-import cv2
-from PIL import Image
-import solver
 
 st.set_page_config(layout="wide", page_title="Asistente de Rompecabezas")
+
+try:
+    import numpy as np
+    import cv2
+    from PIL import Image
+    import solver
+except ImportError as e:
+    st.error(f"⚠️ Error de sistema: No se pudieron cargar las librerías necesarias. ({e})")
+    st.info("Nota para el desarrollador: Si esto corre en Streamlit Cloud, asegúrate de haber subido el archivo `packages.txt` con `libgl1`.")
+    st.stop()
+except Exception as e:
+    st.error(f"⚠️ Error inesperado al iniciar: {e}")
+    st.stop()
 
 st.title("🧩 Asistente de Armado de Rompecabezas")
 st.markdown("""
